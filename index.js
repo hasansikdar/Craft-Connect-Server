@@ -11,17 +11,26 @@ app.use(cors())
 app.use(express.json())
 
 
-const uri = `mongodb+srv://${process.env.MONGODBUSER}:${process.env.MONGODBPASSWORD}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS }@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
     try{
         const users = client.db('Craft-Connect').collection('users');
-
+        const usersPost = client.db('Craft-Connect').collection('usersPost');
         app.get('/', (req, res) => {
             res.send('Craft connect server is running..')
         })
-
+        app.post('/usersPost', async(req, res) => {
+            const usersData = req.body;
+            const result = await usersPost.insertOne(usersData);
+            res.send(result);
+        })
+        app.get('/usersPost', async(req, res) => {
+            const query = {};
+            const result = await usersPost.find(query).toArray();
+            res.send(result);
+        })
         app.post('/users', async(req ,res) => {
             const user = req.body;
             const result = await users.insertOne(user);
