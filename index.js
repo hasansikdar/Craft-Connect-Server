@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const port = process.env.PORT = 5000;
+const port = process.env.PORT  || 5000;
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
@@ -19,7 +19,7 @@ async function run() {
         const users = client.db('Craft-Connect').collection('users');
 
         app.get('/', (req, res) => {
-            req.send('Craft connect server is running..')
+            res.send('Craft connect server is running..')
         })
 
         app.post('/users', async(req ,res) => {
