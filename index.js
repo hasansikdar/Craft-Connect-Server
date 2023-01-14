@@ -23,7 +23,6 @@ async function run() {
         })
         app.post('/usersPost', async(req, res) => {
             const usersData = req.body;
-            console.log(usersData);
             const result = await usersPost.insertOne(usersData);
             res.send(result);
         })
@@ -32,11 +31,19 @@ async function run() {
             const result = await usersPost.find(query).toArray();
             res.send(result);
         })
+
+        // user created post
         app.post('/users', async(req ,res) => {
             const user = req.body;
             const result = await users.insertOne(user);
             res.send(result);
         })
+        // all users get
+        app.get('/users', async(req, res) => {
+            const result = await users.find({}).toArray();
+            res.send(result);
+        })
+
 
     }
     finally{}
