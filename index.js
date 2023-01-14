@@ -30,12 +30,13 @@ async function run() {
     app.post("/usersPost", async (req, res) => {
       const usersData = req.body;
       const result = await usersPost.insertOne(usersData);
+      console.log(usersData)
       res.send(result);
     });
     // all posts get
     app.get("/usersPost", async (req, res) => {
       const query = {};
-      const result = await usersPost.find(query).toArray().reverse();
+      const result = await usersPost.find(query).toArray();
       res.send(result);
     });
     // post delete
@@ -59,7 +60,7 @@ async function run() {
   } finally {
   }
 }
-run().catch((error) => console.log(error));
+run().catch((error) => console.log(error.message));
 
 app.listen(port, (req, res) => {
   console.log("Craft connect server is running..");
