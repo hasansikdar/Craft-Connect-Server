@@ -39,7 +39,7 @@ async function run() {
     // all posts get
     app.get("/usersPost", async (req, res) => {
       const query = {};
-      const result = await usersPost.find(query).toArray();
+      const result = await usersPost.find(query).toArray().reverse();
       res.send(result);
     });
     // post delete
