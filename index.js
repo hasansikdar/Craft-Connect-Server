@@ -39,9 +39,25 @@ async function run() {
     // all posts get
     app.get("/usersPost", async (req, res) => {
       const query = {};
-      const result = await usersPost.find(query).toArray().reverse();
-      res.send(result);
+      const result = await usersPost.find(query).toArray();
+      res.send(result.reverse());
     });
+    app.patch('/usersPost:id', async(req, res) => {
+      const id = req.params.id;
+      const emojiLink = req.body.imageLink;
+      const filter = {_id: ObjectId(id)};
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          emojiLink: emojiLink
+        }
+      }
+
+      const result = await usersPost.updateOne(filter, updatedDoc, options);
+      res.send(result);
+
+
+    })
     // post delete
     app.delete("/usersPost/:id", async (req, res) => {
       const id = req.params.id;
