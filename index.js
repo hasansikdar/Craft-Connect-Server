@@ -33,14 +33,13 @@ async function run() {
     app.post("/usersPost", async (req, res) => {
       const usersData = req.body;
       const result = await usersPost.insertOne(usersData);
-      console.log(usersData)
       res.send(result);
     });
     // all posts get
     app.get("/usersPost", async (req, res) => {
       const query = {};
-      const result = await usersPost.find(query).toArray().reverse();
-      res.send(result);
+      const result = await usersPost.find(query).toArray();
+      res.send(result.reverse());
     });
     // post delete
     app.delete("/usersPost/:id", async (req, res) => {
