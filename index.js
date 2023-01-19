@@ -33,7 +33,6 @@ async function run() {
     app.post("/usersPost", async (req, res) => {
       const usersData = req.body;
       const result = await usersPost.insertOne(usersData);
-      console.log(usersData)
       res.send(result);
     });
     // all posts get
