@@ -23,6 +23,7 @@ async function run() {
   try {
     const users = client.db("Craft-Connect").collection("users");
     const usersPost = client.db("Craft-Connect").collection("usersPost");
+    const reactions = client.db("Craft-Connect").collection("reactions");
 
     // home page get api
     app.get("/", (req, res) => {
@@ -41,21 +42,20 @@ async function run() {
       const result = await usersPost.find(query).toArray();
       res.send(result.reverse());
     });
-    app.patch('/usersPost:id', async(req, res) => {
-      const id = req.params.id;
-      const emojiLink = req.body.imageLink;
-      const filter = {_id: ObjectId(id)};
-      const options = { upsert: true };
-      const updatedDoc = {
-        $set: {
-          emojiLink: emojiLink
-        }
-      }
+    app.post('/reactions', async (req, res) => {
+      // const id = req.params.id;
+      const reactionInfo = req.body;
+      // console.log(Reactioninfo)
+      // const filter = {_id: ObjectId(id)};
+      // const options = { upsert: true };
+      // const updatedDoc = {
+      //   $set: {
+      //     emojiLink: Reactioninfo?.emojiLink,
+      //   }
+      // }
 
-      const result = await usersPost.updateOne(filter, updatedDoc, options);
+      const result = await reactions.insertOne(reactionInfo);
       res.send(result);
-
-
     })
     // post delete
     app.delete("/usersPost/:id", async (req, res) => {
@@ -75,8 +75,16 @@ async function run() {
       const result = await users.find({}).toArray();
       res.send(result);
     });
-  } 
-  finally {}
+
+    // postReaction
+    app.get('/postReactions/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await reactions.find({uniqueId:id}).toArray();
+      res.send(result);
+    })
+
+  }
+  finally { }
 }
 run().catch((error) => console.log(error.message));
 
