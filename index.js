@@ -24,6 +24,7 @@ async function run() {
     const users = client.db("Craft-Connect").collection("users");
     const usersPost = client.db("Craft-Connect").collection("usersPost");
     const reactions = client.db("Craft-Connect").collection("reactions");
+    const comments = client.db("Craft-Connect").collection("comments");
 
     // home page get api
     app.get("/", (req, res) => {
@@ -79,9 +80,55 @@ async function run() {
     // postReaction
     app.get('/postReactions/:id', async (req, res) => {
       const id = req.params.id;
-      const result = await reactions.find({uniqueId:id}).toArray();
+      const result = await reactions.find({ uniqueId: id }).toArray();
       res.send(result);
     })
+    // post details 
+    app.get('/postDetails/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await usersPost.findOne({ _id: ObjectId(id) });
+      res.send(result);
+    })
+    //add comment 
+    app.post('/comment', async (req, res) => {
+      const comment = req.body;
+      const result = await comments.insertOne(comment);
+      res.send(result);
+    })
+
+    //get post comment 
+    app.get('/comments/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await comments.find({ uniqueId: id }).toArray();
+      res.send(result.reverse());
+    })
+
+    // edit comment 
+    app.patch('/editComment/:id', async (req, res) => {
+      const id = req.params.id;
+      const email = req.query?.email;
+      const updatecomment = req.body?.updateComment;
+      const filter = { _id: ObjectId(id), userEmail: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          commentText: updatecomment
+        }
+      }
+      const result = await comments.updateOne(filter, updateDoc, options);
+      res.send(result);
+    })
+
+    // Delete Comment 
+    app.delete('/deleteComment/:id', async (req, res) => {
+      const id = req.params.id;
+      const email = req.query.email;
+      const filter = { _id: ObjectId(id), userEmail: email };
+      const result = await comments.deleteOne(filter);
+      res.send(result);
+    })
+
+
 
   }
   finally { }
