@@ -1,9 +1,0 @@
-[debug] [2023-01-13T14:18:30.263Z] ----------------------------------------------------------------------
-[debug] [2023-01-13T14:18:30.266Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Muhammad Hasan\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
-[debug] [2023-01-13T14:18:30.268Z] CLI Version:   11.15.0
-[debug] [2023-01-13T14:18:30.269Z] Platform:      win32
-[debug] [2023-01-13T14:18:30.269Z] Node Version:  v18.12.1
-[debug] [2023-01-13T14:18:30.271Z] Time:          Fri Jan 13 2023 20:18:30 GMT+0600 (Bangladesh Standard Time)
-[debug] [2023-01-13T14:18:30.272Z] ----------------------------------------------------------------------
-[debug] 
-[debug] [2023-01-13T14:18:30.277Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
