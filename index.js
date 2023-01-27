@@ -20,7 +20,7 @@ async function run() {
         const usersPost = client.db('Craft-Connect').collection('usersPost');
 
 
-        // home page get api
+        // HOME page get api
         app.get('/', (req, res) => {
             res.send('Craft connect server is running..')
         })
