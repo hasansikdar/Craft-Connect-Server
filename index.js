@@ -34,12 +34,25 @@ async function run() {
     //get my post 
     app.get("/myposts", async (req, res) => {
       const email = req.query.email;
+      // console.log(email);
       const query = {
         userEmail: email,
       };
       const result = await usersPost.find(query).toArray();
       res.send(result);
     });
+
+    //get user by id 
+     app.get("/user/:email", async (req, res) => {
+       const UserEmail = req.params.email;
+      //  console.log(UserEmail);
+       const query = { 
+        email: UserEmail
+       };
+       const userByEmail = await users.findOne(query);
+       console.log(userByEmail);
+       res.send(userByEmail);
+     });
 
     // post added
     app.post("/usersPost", async (req, res) => {
@@ -96,6 +109,7 @@ async function run() {
     // post details 
     app.get('/postDetails/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const result = await usersPost.findOne({ _id: ObjectId(id) });
       res.send(result);
     })
