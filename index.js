@@ -17,7 +17,11 @@ app.use(express.json());
 // });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
 
 async function run() {
   try {
@@ -43,7 +47,7 @@ async function run() {
       const result = await usersPost.find(query).toArray();
       res.send(result.reverse());
     });
-    app.post('/reactions', async (req, res) => {
+    app.post("/reactions", async (req, res) => {
       // const id = req.params.id;
       const reactionInfo = req.body;
       // console.log(Reactioninfo)
@@ -57,7 +61,7 @@ async function run() {
 
       const result = await reactions.insertOne(reactionInfo);
       res.send(result);
-    })
+    });
     // post delete
     app.delete("/usersPost/:id", async (req, res) => {
       const id = req.params.id;
@@ -77,34 +81,51 @@ async function run() {
       res.send(result);
     });
 
+    // for like post
+
+    app.put("/users/:id", async (req, res) => {
+      const likesInfo = req.body;
+      console.log(likesInfo);
+      const ID = req.params.id;
+      const filter = { _id: ObjectId(ID) };
+      const updateDoc = {
+        $set: {
+          likes: [...[likesInfo], likesInfo],
+        },
+      };
+      const option = { upsert: true };
+      const result = await usersPost.updateOne(filter, updateDoc, option);
+      res.send(result);
+    });
+
     // postReaction
-    app.get('/postReactions/:id', async (req, res) => {
+    app.get("/postReactions/:id", async (req, res) => {
       const id = req.params.id;
       const result = await reactions.find({ uniqueId: id }).toArray();
       res.send(result);
-    })
-    // post details 
-    app.get('/postDetails/:id', async (req, res) => {
+    });
+    // post details
+    app.get("/postDetails/:id", async (req, res) => {
       const id = req.params.id;
       const result = await usersPost.findOne({ _id: ObjectId(id) });
       res.send(result);
-    })
-    //add comment 
-    app.post('/comment', async (req, res) => {
+    });
+    //add comment
+    app.post("/comment", async (req, res) => {
       const comment = req.body;
       const result = await comments.insertOne(comment);
       res.send(result);
-    })
+    });
 
-    //get post comment 
-    app.get('/comments/:id', async (req, res) => {
+    //get post comment
+    app.get("/comments/:id", async (req, res) => {
       const id = req.params.id;
       const result = await comments.find({ uniqueId: id }).toArray();
       res.send(result.reverse());
-    })
+    });
 
-    // edit comment 
-    app.patch('/editComment/:id', async (req, res) => {
+    // edit comment
+    app.patch("/editComment/:id", async (req, res) => {
       const id = req.params.id;
       const email = req.query?.email;
       const updatecomment = req.body?.updateComment;
@@ -112,33 +133,28 @@ async function run() {
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          commentText: updatecomment
-        }
-      }
+          commentText: updatecomment,
+        },
+      };
       const result = await comments.updateOne(filter, updateDoc, options);
       res.send(result);
-    })
+    });
 
-    // Delete Comment 
-    app.delete('/deleteComment/:id', async (req, res) => {
+    // Delete Comment
+    app.delete("/deleteComment/:id", async (req, res) => {
       const id = req.params.id;
       const email = req.query.email;
       const filter = { _id: ObjectId(id), userEmail: email };
       const result = await comments.deleteOne(filter);
       res.send(result);
-    })
+    });
 
-
-<<<<<<< HEAD
-        // HOME page get api
-        app.get('/', (req, res) => {
-            res.send('Craft connect server is running..')
-        })
-=======
->>>>>>> bfdbe326ed2b7cfd1f17b3826fa6324af9abac50
-
+    // HOME page get api
+    app.get("/", (req, res) => {
+      res.send("Craft connect server is running..");
+    });
+  } finally {
   }
-  finally { }
 }
 run().catch((error) => console.log(error.message));
 
