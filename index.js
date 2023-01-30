@@ -129,6 +129,10 @@ async function run() {
     })
 
 
+        // HOME page get api
+        app.get('/', (req, res) => {
+            res.send('Craft connect server is running..')
+        })
 
   }
   finally { }
