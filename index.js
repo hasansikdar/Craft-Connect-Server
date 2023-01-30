@@ -31,6 +31,16 @@ async function run() {
       res.send("Craft connect server is running..");
     });
 
+    //get my post 
+    app.get("/myposts", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        userEmail: email,
+      };
+      const result = await usersPost.find(query).toArray();
+      res.send(result);
+    });
+
     // post added
     app.post("/usersPost", async (req, res) => {
       const usersData = req.body;
@@ -141,5 +151,5 @@ run().catch((error) => console.log(error.message));
 
 app.listen(port, (req, res) => {
   console.log("Craft connect server is running..");
-  
+
 }); 
