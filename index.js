@@ -35,7 +35,7 @@ async function run() {
       res.send("Craft connect server is running..");
     });
 
-    //get my post 
+    //get my post
     app.get("/myposts", async (req, res) => {
       const email = req.query.email;
       // console.log(email);
@@ -46,17 +46,49 @@ async function run() {
       res.send(result);
     });
 
-    //get user by id 
-     app.get("/user/:email", async (req, res) => {
-       const UserEmail = req.params.email;
-      //  console.log(UserEmail);
-       const query = { 
-        email: UserEmail
+    //get user by email // my profile
+     app.get("/users", async (req, res) => {
+       const email = req.query.email;
+       const query = {
+         email: email,
        };
-       const userByEmail = await users.findOne(query);
-       console.log(userByEmail);
-       res.send(userByEmail);
+       const result = await users.find(query).toArray();
+       res.send(result);
      });
+
+
+    //update user profile picture
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const user = req.body;
+      const option = { upsert: true };
+      const updatedUser = {
+        $set: {
+          photoURL: user.title,
+          institution: user.institution,
+        },
+      };
+      const result = await users.updateOne(
+        filter,
+        updatedUser,
+        option
+      );
+      res.send(result);
+    });
+
+
+    //get user by id
+    app.get("/user/:email", async (req, res) => {
+      const UserEmail = req.params.email;
+      //  console.log(UserEmail);
+      const query = {
+        email: UserEmail,
+      };
+      const userByEmail = await users.findOne(query);
+      console.log(userByEmail);
+      res.send(userByEmail);
+    });
 
     // post added
     app.post("/usersPost", async (req, res) => {
