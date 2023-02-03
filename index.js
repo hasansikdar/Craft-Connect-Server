@@ -61,12 +61,12 @@ async function run() {
     app.put("/users/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
-      const user = req.body;
+      const coverImage = req.body;
+      console.log(coverImage);
       const option = { upsert: true };
       const updatedUser = {
         $set: {
-          photoURL: user.title,
-          institution: user.institution,
+          coverPhoto: coverImage.coverImage
         },
       };
       const result = await users.updateOne(
