@@ -27,6 +27,7 @@ async function run() {
   try {
     const users = client.db("Craft-Connect").collection("users");
     const usersPost = client.db("Craft-Connect").collection("usersPost");
+    const advertisePost = client.db("Craft-Connect").collection("advertisePost");
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
 
@@ -187,7 +188,18 @@ async function run() {
       const result = await comments.deleteOne(filter);
       res.send(result);
     });
-
+    // ++++++++++++++++++++++ Advertising Post Method ++++++++++++++ to frontend 
+    app.post("/advertising-post/", async (req, res)=>{
+      const advertisingData = req.body;
+      const result = await advertisePost.insertOne(advertisingData);
+      res.send(result);
+    })  
+    // getting advertisePost 
+    app.get('/advertising-post/', async (req, res) => {
+      const query = {};
+      const result = await advertisePost.find(query).toArray();
+      res.send(result.reverse());
+    })
     // HOME page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
