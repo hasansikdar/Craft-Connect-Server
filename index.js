@@ -78,6 +78,27 @@ async function run() {
     });
 
 
+    app.put("/profileImg/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const profileImg = req.body;
+      console.log(profileImg.profileImg);
+      // console.log(coverImage);
+      const option = { upsert: true };
+      const updatedUser = {
+        $set: {
+          photoURL: profileImg
+        },
+      };
+      const result = await users.updateOne(
+        filter,
+        updatedUser,
+        option
+      );
+      res.send(result);
+    });
+
+
     //get user by id
     app.get("/user/:email", async (req, res) => {
       const UserEmail = req.params.email;
