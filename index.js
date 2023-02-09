@@ -48,16 +48,16 @@ async function run() {
     });
 
     //get user by id 
-     app.get("/user/:email", async (req, res) => {
-       const UserEmail = req.params.email;
+    app.get("/user/:email", async (req, res) => {
+      const UserEmail = req.params.email;
       //  console.log(UserEmail);
-       const query = { 
+      const query = {
         email: UserEmail
-       };
-       const userByEmail = await users.findOne(query);
-       console.log(userByEmail);
-       res.send(userByEmail);
-     });
+      };
+      const userByEmail = await users.findOne(query);
+      console.log(userByEmail);
+      res.send(userByEmail);
+    });
 
     // post added
     app.post("/usersPost", async (req, res) => {
@@ -189,16 +189,24 @@ async function run() {
       res.send(result);
     });
     // ++++++++++++++++++++++ Advertising Post Method ++++++++++++++ to frontend 
-    app.post("/advertising-post/", async (req, res)=>{
+    app.post("/advertising-post/", async (req, res) => {
       const advertisingData = req.body;
       const result = await advertisePost.insertOne(advertisingData);
       res.send(result);
-    })  
+    })
     // getting advertisePost 
     app.get('/advertising-post/', async (req, res) => {
       const query = {};
       const result = await advertisePost.find(query).toArray();
       res.send(result.reverse());
+    });
+    // getting and single add 
+    app.get('/advertising-post/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: ObjectId(id)}
+      console.log(query, id) 
+      const result = await advertisePost.findOne(query);
+      res.send(result);
     })
     // HOME page get api
     app.get("/", (req, res) => {
