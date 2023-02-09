@@ -36,6 +36,12 @@ async function run() {
       res.send("Craft connect server is running..");
     });
 
+     app.get("/allusers", async (req, res) => {
+       const query = {};
+       const result = await users.find(query).toArray();
+       res.send(result);
+     });
+
     //get my post
     app.get("/myposts", async (req, res) => {
       const email = req.query.email;
