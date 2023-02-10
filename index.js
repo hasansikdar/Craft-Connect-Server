@@ -83,33 +83,18 @@ async function run() {
 
     // for like post
 
-    // app.put("/users", async (req, res) => {
-    //   const likesInfo = req.body.postId;
-    //   // console.log(likesInfo);
-    //   // const ID = req.params.id;
-    //   const filter = { _id: ObjectId(likesInfo) };
-    //   const updateDoc = {
-    //     $set: {
-    //       likes: req.user._id,
-    //     },
-    //   };
-    //   const option = { upsert: true };
-    //   const result = await usersPost.updateOne(filter, updateDoc, option);
-    //   res.send(result);
-    // });
     app.put("/users/:id", async (req, res) => {
       const likesInfo = req.body;
       // console.log(likesInfo);
       const ID = req.params.id;
       const filter = { _id: ObjectId(ID) };
-
       const updateDoc = {
         $set: {
           likes: likesInfo,
         },
       };
       const option = { upsert: true };
-      const result = await usersPost.updateMany(filter, updateDoc, option);
+      const result = await usersPost.updateOne(filter, updateDoc, option);
       res.send(result);
     });
 
