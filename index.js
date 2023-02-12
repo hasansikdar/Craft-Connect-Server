@@ -70,7 +70,7 @@ async function run() {
         email: UserEmail
       };
       const userByEmail = await users.findOne(query);
-      console.log(userByEmail);
+      //console.log(userByEmail);
       res.send(userByEmail);
     });
 
@@ -80,7 +80,7 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const coverImage = req.body;
-      console.log(coverImage);
+      //console.log(coverImage);
       const option = { upsert: true };
       const updatedUser = {
         $set: {
@@ -100,7 +100,7 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const profileImg = req.body;
-      console.log(profileImg.profileImg);
+      //console.log(profileImg.profileImg);
       // console.log(coverImage);
       const option = { upsert: true };
       const updatedUser = {
@@ -125,7 +125,7 @@ async function run() {
         email: UserEmail,
       };
       const userByEmail = await users.findOne(query);
-      console.log(userByEmail);
+      //console.log(userByEmail);
       res.send(userByEmail);
     });
 
@@ -201,7 +201,7 @@ async function run() {
     // post details
     app.get("/postDetails/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      //console.log(id);
       const result = await usersPost.findOne({ _id: ObjectId(id) });
       res.send(result);
     });
@@ -259,7 +259,7 @@ async function run() {
     app.get('/advertising-post/:id', async (req, res) => {
       const id = req.params.id;
       const query = {_id: ObjectId(id)}
-      console.log(query, id) 
+      //console.log(query, id) 
       const result = await advertisePost.findOne(query);
       res.send(result);
     })
