@@ -30,7 +30,7 @@ async function run() {
     const advertisePost = client.db("Craft-Connect").collection("advertisePost");
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
-    const allProducts =  client.db("Craft-Connect").collection("allProducts");
+    const allProducts = client.db("Craft-Connect").collection("allProducts");
 
     // home page get api
     app.get("/", (req, res) => {
@@ -204,22 +204,34 @@ async function run() {
     // getting and single add 
     app.get('/advertising-post/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)}
-      console.log(query, id) 
+      const query = { _id: ObjectId(id) }
+      console.log(query, id)
       const result = await advertisePost.findOne(query);
       res.send(result);
     })
     // getting product Data 
-    app.post('/allProduct/', async(req, res) => {
+    app.post('/allProduct/', async (req, res) => {
       const data = req.body;
       console.log(data);
       const result = await allProducts.insertOne(data);
       res.send(result);
     })
-    app.get('/allProduct', async(req, res) => {
+    app.get('/allProduct', async (req, res) => {
       const query = {};
       const result = await allProducts.find(query).toArray();
       res.send(result.reverse());
+    })
+    app.get('/allProducts/', async (req, res) => {
+      const email = req.query.email;
+      const filter = { email: email };
+      const result = await allProducts.find(filter).toArray();
+      res.send(result.reverse());
+    })
+    app.get('/allProducts/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const result = await allProducts.deleteOne({ _id: ObjectId(id) });
+      res.send(result);
     })
     // HOME page get api
     app.get("/", (req, res) => {
