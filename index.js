@@ -30,6 +30,7 @@ async function run() {
     const advertisePost = client.db("Craft-Connect").collection("advertisePost");
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
+    const allProducts =  client.db("Craft-Connect").collection("allProducts");
 
     // home page get api
     app.get("/", (req, res) => {
@@ -262,6 +263,18 @@ async function run() {
       //console.log(query, id) 
       const result = await advertisePost.findOne(query);
       res.send(result);
+    })
+    // getting product Data 
+    app.post('/allProduct/', async(req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await allProducts.insertOne(data);
+      res.send(result);
+    })
+    app.get('/allProduct', async(req, res) => {
+      const query = {};
+      const result = await allProducts.find(query).toArray();
+      res.send(result.reverse());
     })
     // HOME page get api
     app.get("/", (req, res) => {
