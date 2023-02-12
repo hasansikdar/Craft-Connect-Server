@@ -216,6 +216,11 @@ async function run() {
       const result = await allProducts.insertOne(data);
       res.send(result);
     })
+    app.get('/allProduct', async(req, res) => {
+      const query = {};
+      const result = await allProducts.find(query).toArray();
+      res.send(result.reverse());
+    })
     // HOME page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
