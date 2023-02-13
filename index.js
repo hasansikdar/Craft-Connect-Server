@@ -30,18 +30,19 @@ async function run() {
     const advertisePost = client.db("Craft-Connect").collection("advertisePost");
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
-    const allProducts =  client.db("Craft-Connect").collection("allProducts");
+    const allProducts = client.db("Craft-Connect").collection("allProducts");
+    const bookMarkedPost = client.db("Craft-Connect").collection("bookMarkedPost");
 
     // home page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
 
-     app.get("/allusers", async (req, res) => {
-       const query = {};
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
+    app.get("/allusers", async (req, res) => {
+      const query = {};
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
 
     //get my post
     app.get("/myposts", async (req, res) => {
@@ -55,14 +56,14 @@ async function run() {
     });
 
     //get user by email // my profile
-     app.get("/users", async (req, res) => {
-       const email = req.query.email;
-       const query = {
-         email: email,
-       };
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email,
+      };
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
     //get user by id 
     app.get("/user/:email", async (req, res) => {
       const UserEmail = req.params.email;
@@ -259,23 +260,30 @@ async function run() {
     // getting and single add 
     app.get('/advertising-post/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)}
+      const query = { _id: ObjectId(id) }
       //console.log(query, id) 
       const result = await advertisePost.findOne(query);
       res.send(result);
     })
     // getting product Data 
-    app.post('/allProduct/', async(req, res) => {
+    app.post('/allProduct/', async (req, res) => {
       const data = req.body;
       console.log(data);
       const result = await allProducts.insertOne(data);
       res.send(result);
     })
-    app.get('/allProduct', async(req, res) => {
+    app.get('/allProduct', async (req, res) => {
       const query = {};
       const result = await allProducts.find(query).toArray();
       res.send(result.reverse());
     })
+
+    //Add bookmarked post at DB
+    app.post("/user/bookmark", async (req, res) => {
+      const bookMarkPost = req.body;
+      
+    })
+
     // HOME page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
