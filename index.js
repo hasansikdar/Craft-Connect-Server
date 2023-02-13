@@ -31,17 +31,43 @@ async function run() {
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
     const allProducts = client.db("Craft-Connect").collection("allProducts");
+    const addToCart = client.db("Craft-Connect").collection("cartProducts");
+
 
     // home page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
+    
+    //add to cart
+    app.post("/addtocart", async (req, res) => {
+      const product = req.body;
+      const result = await addToCart.insertOne(product);
+      res.send(result);
+    });
 
+    //get cart product
+    app.get('/cartproduct', async(req, res) => {
+      const query = {};
+      const result = await addToCart.find(query).toArray();
+      res.send(result);
+    });
+
+    //get all products
+    app.get("/products", async (req, res) => {
+      const query = {};
+      const result = await allProducts.find(query).toArray();
+      res.send(result);
+    });
+
+
+    // get all users
      app.get("/allusers", async (req, res) => {
        const query = {};
        const result = await users.find(query).toArray();
        res.send(result);
      });
+
 
     //get my post
     app.get("/myposts", async (req, res) => {
