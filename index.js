@@ -46,6 +46,17 @@ async function run() {
       res.send(result);
     });
 
+    //check is product already added to cart?
+    app.get("/checkCartProduct", async (req, res) => {
+      const availableProduct = req.query.productName;
+      console.log(availableProduct);
+      const query = {
+        productName: availableProduct,
+      };
+      const result = await addToCart.find(query).toArray();
+      res.send(result);
+    });
+
     //get cart product
     app.get('/cartproduct', async(req, res) => {
       const query = {};
