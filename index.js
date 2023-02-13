@@ -283,7 +283,7 @@ async function run() {
       const bookMarkPost = req.body;
       console.log(bookMarkPost);
       const result = await bookMarkedPost.insertOne(bookMarkPost);
-      
+      res.send(result);
     })
 
     // HOME page get api
