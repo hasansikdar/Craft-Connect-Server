@@ -284,6 +284,14 @@ async function run() {
       const result = await bookMarkedPost.insertOne(bookMarkPost);
       res.send(result);
     })
+    //Get data from DB using email
+    app.get("/user/bookmarkPost/:email", async(req, res) =>{
+      const email = req.params.email;
+      // console.log(email)
+      const filter = { bookmarkedUserEmail : email };
+      const result = await bookMarkedPost.find(filter).toArray();
+      res.send(result);
+    })
 
     // HOME page get api
     app.get("/", (req, res) => {
