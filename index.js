@@ -281,7 +281,6 @@ async function run() {
     //Add bookmarked post at DB
     app.post("/user/bookmark", async (req, res) => {
       const bookMarkPost = req.body;
-      console.log(bookMarkPost);
       const result = await bookMarkedPost.insertOne(bookMarkPost);
       res.send(result);
     })
