@@ -38,7 +38,7 @@ async function run() {
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
-    
+
     //add to cart
     app.post("/addtocart", async (req, res) => {
       const product = req.body;
@@ -47,12 +47,23 @@ async function run() {
     });
 
     //get cart product
-    app.get('/cartproduct', async(req, res) => {
+    app.get('/cartproduct', async (req, res) => {
       const query = {};
       const result = await addToCart.find(query).toArray();
+      res.send(result.reverse());
+    });
+    app.get('/cartproduct/:email', async (req, res) => {
+      const email = req.params.email;
+      const result = await addToCart.find({ buyerEmail: email }).toArray();
+      res.send(result.reverse());
+    });
+    app.get('/cartproducts/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await addToCart.deleteOne(query);
       res.send(result);
     });
-
     //get all products
     app.get("/products", async (req, res) => {
       const query = {};
@@ -62,11 +73,11 @@ async function run() {
 
 
     // get all users
-     app.get("/allusers", async (req, res) => {
-       const query = {};
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
+    app.get("/allusers", async (req, res) => {
+      const query = {};
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
 
 
     //get my post
@@ -81,14 +92,14 @@ async function run() {
     });
 
     //get user by email // my profile
-     app.get("/users", async (req, res) => {
-       const email = req.query.email;
-       const query = {
-         email: email,
-       };
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email,
+      };
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
     //get user by id 
     app.get("/user/:email", async (req, res) => {
       const UserEmail = req.params.email;
