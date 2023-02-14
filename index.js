@@ -278,19 +278,30 @@ async function run() {
       res.send(result.reverse());
     })
 
+    // Mohammad Ali Jinnha
     //Add bookmarked post at DB
     app.post("/user/bookmark", async (req, res) => {
       const bookMarkPost = req.body;
       const result = await bookMarkedPost.insertOne(bookMarkPost);
       res.send(result);
     })
+
     //Get data from DB using email
-    app.get("/user/bookmarkPost/:email", async(req, res) =>{
+    app.get("/user/bookmarkPost/:email", async (req, res) => {
       const email = req.params.email;
       // console.log(email)
-      const filter = { bookmarkedUserEmail : email };
+      const filter = { bookmarkedUserEmail: email };
       const result = await bookMarkedPost.find(filter).toArray();
       res.send(result);
+    })
+    
+    //Delete a document form Bookmarked
+    app.delete("/user/bookmarkedPost/:id", async (req, res) => {
+      const post_id = req.params.id;
+      // console.log(post_id);
+      const filter = { _id: ObjectId(post_id) }
+      const result = await bookMarkedPost.deleteOne(filter)
+      res.send(result)
     })
 
     // HOME page get api
