@@ -8,13 +8,13 @@ require("dotenv").config();
 //middleware
 app.use(cors());
 app.use(express.json());
-
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 // const client = new MongoClient(uri, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 //   serverApi: ServerApiVersion.v1,
 // });
+const stripe = require("stripe")(process.env.STRIPE);
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -45,7 +45,21 @@ async function run() {
       const result = await addToCart.insertOne(product);
       res.send(result);
     });
-
+    app.post('/create-payment-intent', async (req, res) => { 
+      const booking = req.body;
+      const price = booking.price;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: "usd",
+        amount: amount,
+        "payment_method_types": [
+          "card"
+        ],
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    })
     //get cart product
     app.get('/cartproduct', async (req, res) => {
       const query = {};
