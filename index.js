@@ -8,13 +8,13 @@ require("dotenv").config();
 //middleware
 app.use(cors());
 app.use(express.json());
-
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 // const client = new MongoClient(uri, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 //   serverApi: ServerApiVersion.v1,
 // });
+const stripe = require("stripe")(process.env.STRIPE);
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -32,12 +32,62 @@ async function run() {
     const comments = client.db("Craft-Connect").collection("comments");
     const allProducts = client.db("Craft-Connect").collection("allProducts");
     const bookMarkedPost = client.db("Craft-Connect").collection("bookMarkedPost");
+    const addToCart = client.db("Craft-Connect").collection("cartProducts");
+
 
     // home page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
 
+    //add to cart
+    app.post("/addtocart", async (req, res) => {
+      const product = req.body;
+      const result = await addToCart.insertOne(product);
+      res.send(result);
+    });
+    app.post('/create-payment-intent', async (req, res) => { 
+      const booking = req.body;
+      const price = booking.price;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: "usd",
+        amount: amount,
+        "payment_method_types": [
+          "card"
+        ],
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    })
+    //get cart product
+    app.get('/cartproduct', async (req, res) => {
+      const query = {};
+      const result = await addToCart.find(query).toArray();
+      res.send(result.reverse());
+    });
+    app.get('/cartproduct/:email', async (req, res) => {
+      const email = req.params.email;
+      const result = await addToCart.find({ buyerEmail: email }).toArray();
+      res.send(result.reverse());
+    });
+    app.get('/cartproducts/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await addToCart.deleteOne(query);
+      res.send(result);
+    });
+    //get all products
+    app.get("/products", async (req, res) => {
+      const query = {};
+      const result = await allProducts.find(query).toArray();
+      res.send(result);
+    });
+
+
+    // get all users
     app.get("/allusers", async (req, res) => {
       const query = {};
       const result = await users.find(query).toArray();
@@ -302,6 +352,18 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/allProducts/', async (req, res) => {
+      const email = req.query.email;
+      const filter = { email: email };
+      const result = await allProducts.find(filter).toArray();
+      res.send(result.reverse());
+    })
+    app.get('/allProducts/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const result = await allProducts.deleteOne({ _id: ObjectId(id) });
+      res.send(result);
+    })
     // HOME page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
