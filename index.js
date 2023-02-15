@@ -33,6 +33,7 @@ async function run() {
     const allProducts = client.db("Craft-Connect").collection("allProducts");
     const bookMarkedPost = client.db("Craft-Connect").collection("bookMarkedPost");
     const addToCart = client.db("Craft-Connect").collection("cartProducts");
+    const payments = client.db("Craft-Connect").collection("payments");
 
 
     // home page get api
@@ -46,7 +47,7 @@ async function run() {
       const result = await addToCart.insertOne(product);
       res.send(result);
     });
-    app.post('/create-payment-intent', async (req, res) => { 
+    app.post('/create-payment-intent', async (req, res) => {
       const booking = req.body;
       const price = booking.price;
       const amount = price * 100;
@@ -60,6 +61,20 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    })
+    app.post('/payments', async (req, res) => {
+      const payment = req.body;
+      const result = await payments.insertOne(payment);
+      const id = payment.productId;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId
+        }
+      }
+      const updateResult = await addToCart.updateOne(filter, updateDoc);
+      res.send(result);
     })
     //get cart product
     app.get('/cartproduct', async (req, res) => {
