@@ -27,20 +27,23 @@ async function run() {
   try {
     const users = client.db("Craft-Connect").collection("users");
     const usersPost = client.db("Craft-Connect").collection("usersPost");
-    const advertisePost = client.db("Craft-Connect").collection("advertisePost");
+    const advertisePost = client
+      .db("Craft-Connect")
+      .collection("advertisePost");
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
     const allProducts = client.db("Craft-Connect").collection("allProducts");
     const addToCart = client.db("Craft-Connect").collection("cartProducts");
-    const reportedProduct = client.db("Craft-Connect").collection("reportedProduct");
+    const reportedProduct = client
+      .db("Craft-Connect")
+      .collection("reportedProduct");
     const reportedPost = client.db("Craft-Connect").collection("reportedPost");
-
 
     // home page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
-    
+
     //add to cart
     app.post("/addtocart", async (req, res) => {
       const product = req.body;
@@ -52,6 +55,13 @@ async function run() {
     app.post("/report-post", async (req, res) => {
       const post = req.body;
       const result = await reportedPost.insertOne(post);
+      res.send(result);
+    });
+
+    //get reported post
+    app.get("/reported-post", async (req, res) => {
+      const query = {};
+      const result = await reportedPost.find(query).toArray();
       res.send(result);
     });
 
@@ -98,7 +108,7 @@ async function run() {
     });
 
     //get cart product
-    app.get('/cartproduct', async(req, res) => {
+    app.get("/cartproduct", async (req, res) => {
       const query = {};
       const result = await addToCart.find(query).toArray();
       res.send(result);
@@ -111,14 +121,12 @@ async function run() {
       res.send(result);
     });
 
-
     // get all users
-     app.get("/allusers", async (req, res) => {
-       const query = {};
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
-
+    app.get("/allusers", async (req, res) => {
+      const query = {};
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
 
     //get my post
     app.get("/myposts", async (req, res) => {
@@ -132,26 +140,25 @@ async function run() {
     });
 
     //get user by email // my profile
-     app.get("/users", async (req, res) => {
-       const email = req.query.email;
-       const query = {
-         email: email,
-       };
-       const result = await users.find(query).toArray();
-       res.send(result);
-     });
-    //get user by id 
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email,
+      };
+      const result = await users.find(query).toArray();
+      res.send(result);
+    });
+    //get user by id
     app.get("/user/:email", async (req, res) => {
       const UserEmail = req.params.email;
       //  console.log(UserEmail);
       const query = {
-        email: UserEmail
+        email: UserEmail,
       };
       const userByEmail = await users.findOne(query);
       //console.log(userByEmail);
       res.send(userByEmail);
     });
-
 
     //update user profile picture
     app.put("/users/:id", async (req, res) => {
@@ -162,17 +169,12 @@ async function run() {
       const option = { upsert: true };
       const updatedUser = {
         $set: {
-          coverPhoto: coverImage.coverImage
+          coverPhoto: coverImage.coverImage,
         },
       };
-      const result = await users.updateOne(
-        filter,
-        updatedUser,
-        option
-      );
+      const result = await users.updateOne(filter, updatedUser, option);
       res.send(result);
     });
-
 
     app.put("/profileImg/:id", async (req, res) => {
       const id = req.params.id;
@@ -183,17 +185,12 @@ async function run() {
       const option = { upsert: true };
       const updatedUser = {
         $set: {
-          photoURL: profileImg
+          photoURL: profileImg,
         },
       };
-      const result = await users.updateOne(
-        filter,
-        updatedUser,
-        option
-      );
+      const result = await users.updateOne(filter, updatedUser, option);
       res.send(result);
     });
-
 
     //get user by id
     app.get("/user/:email", async (req, res) => {
@@ -321,50 +318,50 @@ async function run() {
       const result = await comments.deleteOne(filter);
       res.send(result);
     });
-    // ++++++++++++++++++++++ Advertising Post Method ++++++++++++++ to frontend 
+    // ++++++++++++++++++++++ Advertising Post Method ++++++++++++++ to frontend
     app.post("/advertising-post/", async (req, res) => {
       const advertisingData = req.body;
       const result = await advertisePost.insertOne(advertisingData);
       res.send(result);
-    })
-    // getting advertisePost 
-    app.get('/advertising-post/', async (req, res) => {
+    });
+    // getting advertisePost
+    app.get("/advertising-post/", async (req, res) => {
       const query = {};
       const result = await advertisePost.find(query).toArray();
       res.send(result.reverse());
     });
-    // getting and single add 
-    app.get('/advertising-post/:id', async (req, res) => {
+    // getting and single add
+    app.get("/advertising-post/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) }
-      console.log(query, id)
+      const query = { _id: ObjectId(id) };
+      console.log(query, id);
       const result = await advertisePost.findOne(query);
       res.send(result);
-    })
-    // getting product Data 
-    app.post('/allProduct/', async (req, res) => {
+    });
+    // getting product Data
+    app.post("/allProduct/", async (req, res) => {
       const data = req.body;
       console.log(data);
       const result = await allProducts.insertOne(data);
       res.send(result);
-    })
-    app.get('/allProduct', async (req, res) => {
+    });
+    app.get("/allProduct", async (req, res) => {
       const query = {};
       const result = await allProducts.find(query).toArray();
       res.send(result.reverse());
-    })
-    app.get('/allProducts/', async (req, res) => {
+    });
+    app.get("/allProducts/", async (req, res) => {
       const email = req.query.email;
       const filter = { email: email };
       const result = await allProducts.find(filter).toArray();
       res.send(result.reverse());
-    })
-    app.get('/allProducts/:id', async (req, res) => {
+    });
+    app.get("/allProducts/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id)
+      console.log(id);
       const result = await allProducts.deleteOne({ _id: ObjectId(id) });
       res.send(result);
-    })
+    });
     // HOME page get api
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
