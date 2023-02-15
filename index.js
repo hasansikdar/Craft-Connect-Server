@@ -8,13 +8,13 @@ require("dotenv").config();
 //middleware
 app.use(cors());
 app.use(express.json());
-
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 // const client = new MongoClient(uri, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
 //   serverApi: ServerApiVersion.v1,
 // });
+const stripe = require("stripe")(process.env.STRIPE);
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ltux5vg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -33,11 +33,15 @@ async function run() {
     const reactions = client.db("Craft-Connect").collection("reactions");
     const comments = client.db("Craft-Connect").collection("comments");
     const allProducts = client.db("Craft-Connect").collection("allProducts");
+    const bookMarkedPost = client
+      .db("Craft-Connect")
+      .collection("bookMarkedPost");
     const addToCart = client.db("Craft-Connect").collection("cartProducts");
     const reportedProduct = client
       .db("Craft-Connect")
       .collection("reportedProduct");
     const reportedPost = client.db("Craft-Connect").collection("reportedPost");
+    const payments = client.db("Craft-Connect").collection("payments");
 
     // home page get api
     app.get("/", (req, res) => {
@@ -62,6 +66,15 @@ async function run() {
     app.get("/reported-post", async (req, res) => {
       const query = {};
       const result = await reportedPost.find(query).toArray();
+      res.send(result.reverse());
+    });
+
+    // delete reported product
+    app.get("/delete-reported-post/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      console.log(query, id);
+      const result = await reportedPost.deleteOne(query);
       res.send(result);
     });
 
@@ -71,6 +84,15 @@ async function run() {
       const query = { _id: ObjectId(id) };
       console.log(query, id);
       const result = await allProducts.findOne(query);
+      res.send(result);
+    });
+
+    // delete reported product
+    app.get("/delete-reported-product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      console.log(query, id);
+      const result = await reportedProduct.deleteOne(query);
       res.send(result);
     });
 
@@ -85,7 +107,7 @@ async function run() {
     app.get("/reported-product", async (req, res) => {
       const query = {};
       const result = await reportedProduct.find(query).toArray();
-      res.send(result);
+      res.send(result.reverse());
     });
 
     //check admin
@@ -98,10 +120,10 @@ async function run() {
 
     //check is product already added to cart?
     app.get("/checkCartProduct", async (req, res) => {
-      const availableProduct = req.query.productName;
+      const availableProduct = req.query.id;
       console.log(availableProduct);
       const query = {
-        productName: availableProduct,
+        productId: availableProduct,
       };
       const result = await addToCart.find(query).toArray();
       res.send(result);
@@ -111,9 +133,53 @@ async function run() {
     app.get("/cartproduct", async (req, res) => {
       const query = {};
       const result = await addToCart.find(query).toArray();
+      res.send(result.reverse());
+    });
+    app.post("/create-payment-intent", async (req, res) => {
+      const booking = req.body;
+      const price = booking.price;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: "usd",
+        amount: amount,
+        payment_method_types: ["card"],
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      const result = await payments.insertOne(payment);
+      const id = payment.productId;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+      const updateResult = await addToCart.updateOne(filter, updateDoc);
       res.send(result);
     });
-
+    //get cart product
+    app.get("/cartproduct", async (req, res) => {
+      const query = {};
+      const result = await addToCart.find(query).toArray();
+      res.send(result.reverse());
+    });
+    app.get("/cartproduct/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await addToCart.find({ buyerEmail: email }).toArray();
+      res.send(result.reverse());
+    });
+    app.get("/cartproducts/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await addToCart.deleteOne(query);
+      res.send(result);
+    });
     //get all products
     app.get("/products", async (req, res) => {
       const query = {};
@@ -125,7 +191,7 @@ async function run() {
     app.get("/allusers", async (req, res) => {
       const query = {};
       const result = await users.find(query).toArray();
-      res.send(result);
+      res.send(result.reverse());
     });
 
     //get my post
@@ -179,13 +245,14 @@ async function run() {
     app.put("/profileImg/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
-      const profileImg = req.body;
-      //console.log(profileImg.profileImg);
-      // console.log(coverImage);
+      const profileImgs = req.body;
+      const { images } = profileImgs;
+      console.log(images);
+      // console.log(profileImg.profileImg);
       const option = { upsert: true };
       const updatedUser = {
         $set: {
-          photoURL: profileImg,
+          photoURL: images,
         },
       };
       const result = await users.updateOne(filter, updatedUser, option);
@@ -350,6 +417,31 @@ async function run() {
       const result = await allProducts.find(query).toArray();
       res.send(result.reverse());
     });
+
+    // Mohammad Ali Jinnah
+    //Add bookmarked post at DB
+    app.post("/user/bookmark", async (req, res) => {
+      const bookMarkPost = req.body;
+      const result = await bookMarkedPost.insertOne(bookMarkPost);
+      res.send(result);
+    });
+
+    //Get data from DB using email
+    app.get("/user/bookmarkPost/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { bookmarkedUserEmail: email };
+      const result = await bookMarkedPost.find(filter).toArray();
+      res.send(result);
+    });
+
+    //Delete a document form Bookmarked
+    app.delete("/user/bookmarkedPost/:id", async (req, res) => {
+      const post_id = req.params.id;
+      const filter = { _id: ObjectId(post_id) };
+      const result = await bookMarkedPost.deleteOne(filter);
+      res.send(result);
+    });
+
     app.get("/allProducts/", async (req, res) => {
       const email = req.query.email;
       const filter = { email: email };
@@ -366,8 +458,9 @@ async function run() {
     app.get("/", (req, res) => {
       res.send("Craft connect server is running..");
     });
-  } finally {
   }
+  finally {
+ }
 }
 run().catch((error) => console.log(error.message));
 
