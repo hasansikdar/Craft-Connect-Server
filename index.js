@@ -56,11 +56,26 @@ async function run() {
       res.send(result);
     });
 
-    //Report Product
+    //Post Report Product
     app.post("/reportproduct", async (req, res) => {
       const product = req.body;
       const result = await reportedProduct.insertOne(product);
       res.send(result);
+    });
+
+    //get reported product
+    app.get("/reported-product", async (req, res) => {
+      const query = {};
+      const result = await reportedProduct.find(query).toArray();
+      res.send(result);
+    });
+
+    //check admin
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await users.findOne(query);
+      res.send({ isAdmin: user?.role === "admin" });
     });
 
     //check is product already added to cart?
