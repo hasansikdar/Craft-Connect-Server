@@ -33,6 +33,7 @@ async function run() {
     const allProducts = client.db("Craft-Connect").collection("allProducts");
     const addToCart = client.db("Craft-Connect").collection("cartProducts");
     const reportedProduct = client.db("Craft-Connect").collection("reportedProduct");
+    const reportedPost = client.db("Craft-Connect").collection("reportedPost");
 
 
     // home page get api
@@ -44,6 +45,13 @@ async function run() {
     app.post("/addtocart", async (req, res) => {
       const product = req.body;
       const result = await addToCart.insertOne(product);
+      res.send(result);
+    });
+
+    //Report Post
+    app.post("/report-post", async (req, res) => {
+      const post = req.body;
+      const result = await reportedPost.insertOne(post);
       res.send(result);
     });
 
