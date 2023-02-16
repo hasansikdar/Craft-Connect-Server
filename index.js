@@ -118,6 +118,26 @@ async function run() {
       res.send({ isAdmin: user?.role === "admin" });
     });
 
+    //update user profile(maruf)
+    app.put("/update-users/:id", async (req, res) => {
+      const id = req.params.id; 
+      const data = req.body;
+      console.log(id);
+      const { displayName, email, photoURL } = data;
+      const filter = { _id: ObjectId(id) };
+      
+      const updatedUser = {
+        $set: {
+          displayName,
+          email,
+          socialMedia: data.socialMedia,
+          photoURL
+        },
+      };
+      const result = await users.updateOne(filter, updatedUser);
+      res.send(result);
+    });
+    
     //check is product already added to cart?
     app.get("/checkCartProduct", async (req, res) => {
       const availableProduct = req.query.id;
@@ -188,7 +208,7 @@ async function run() {
     });
 
     // get all users
-    app.get("/users", async (req, res) => {
+    app.get("/allusers", async (req, res) => {
       const query = {};
       const result = await users.find(query).toArray();
       res.send(result.reverse());
@@ -215,7 +235,7 @@ async function run() {
       res.send(result);
     });
     //get user by id
-    app.get("/user/:email", async (req, res) => {
+    app.get("/users/:email", async (req, res) => {
       const UserEmail = req.params.email;
       //  console.log(UserEmail);
       const query = {
