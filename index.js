@@ -103,7 +103,7 @@ async function run() {
 
 
     // get all users
-    app.get("/allusers", async (req, res) => {
+    app.get("/users", async (req, res) => {
       const query = {};
       const result = await users.find(query).toArray();
       res.send(result);
@@ -140,24 +140,7 @@ async function run() {
       //console.log(userByEmail);
       res.send(userByEmail);
     });
-    app.put("/update-users/:id", async (req, res) => {
-      const id = req.params.id;
-      const data = req.body;
-      console.log(id);
-      const { displayName, email, photoURL } = data;
-      const filter = { _id: ObjectId(id) };
-      
-      const updatedUser = {
-        $set: {
-          displayName,
-          email,
-          socialMedia: data.socialMedia,
-          photoURL
-        },
-      };
-      const result = await users.updateOne(filter, updatedUser);
-      res.send(result);
-    });
+
 
     //update user profile picture
     app.put("/users/:id", async (req, res) => {
@@ -251,11 +234,6 @@ async function run() {
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await users.insertOne(user);
-      res.send(result);
-    });
-    // all users get
-    app.get("/users", async (req, res) => {
-      const result = await users.find({}).toArray();
       res.send(result);
     });
 
