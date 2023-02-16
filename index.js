@@ -140,7 +140,24 @@ async function run() {
       //console.log(userByEmail);
       res.send(userByEmail);
     });
-
+    app.patch("/update-users/:id", async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      console.log(id);
+      const { displayName, email, photoURL } = data;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      const updatedUser = {
+        $set: {
+          displayName,
+          email,
+          socialMedia: data.socialMedia,
+          photoURL
+        },
+      };
+      const result = await users.updateOne(filter, updatedUser, option);
+      res.send(result);
+    });
 
     //update user profile picture
     app.put("/users/:id", async (req, res) => {
