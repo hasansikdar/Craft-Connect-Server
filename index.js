@@ -140,13 +140,13 @@ async function run() {
       //console.log(userByEmail);
       res.send(userByEmail);
     });
-    app.patch("/update-users/:id", async (req, res) => {
+    app.put("/update-users/:id", async (req, res) => {
       const id = req.params.id;
       const data = req.body;
       console.log(id);
       const { displayName, email, photoURL } = data;
       const filter = { _id: ObjectId(id) };
-      const option = { upsert: true };
+      
       const updatedUser = {
         $set: {
           displayName,
@@ -155,7 +155,7 @@ async function run() {
           photoURL
         },
       };
-      const result = await users.updateOne(filter, updatedUser, option);
+      const result = await users.updateOne(filter, updatedUser);
       res.send(result);
     });
 
